@@ -1,85 +1,94 @@
+import React, { useState, useEffect } from 'react';
+import io from 'socket.io-client';
 
-import React, { useEffect, useState } from 'react'
-import queryString from 'query-string'
-import io from 'socket.io-client'
-import { useLocation } from 'react-router-dom';
-export default function Chat(props) {
+const ENDPOINT = "http://localhost:3001";
 
-    const ENDPOINT="http://localhost:3000"
-    const location = useLocation();
-    const [name, setName] = useState('');
+const Chat = () => {
+  const [socket, setSocket] = useState(null);
+  const [message, setMessage] = useState('');
+  const [roomName, setRoomName] = useState('');
+  const [messages, setMessages] = useState([])
+  const [socketid,setSocketId]=useState("");
+  const [id,setId]=useState('')
+  const [room,setRoom]=useState('')
+  useEffect(() => {
+    const newSocket = io(ENDPOINT, { transports: ['websocket'] });
+    setSocket(newSocket);
+
+    newSocket.on('connect', () => {
+      console.log('Connected to the server');
+      setSocketId(newSocket.id)
+    });
+
+    newSocket.on("received-message", (message) => {
+      console.log("Received message:", message);
+      setMessages(prevMessages => [...prevMessages, message]);
+    });
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
     
-    const [socket, setSocket] = useState(null);
-    const [message,SetMessage]=useState("")
-    const [room,setRoom]=useState("")
-    const [roomname,setRoomName]=useState("");
-    const [socketid,setSocketId]=useState("")
-    const [messages,setMessages]=useState([])
-    const handleSubmit=(e)=>{
-
+    if (socket && message) {
       
-      socket.emit("message",{message,room})
-
+      socket.emit("message", { message, room });
+      setMessage("");
+    } else {
+      console.log("Please enter message and room name.");
     }
-    const JoinSomeRoom=()=>{
+  };
+  const sendwithid=()=>{
 
-      socket.emit("join-room",roomname)
-      SetMessage('')
+   socket.emit("single",{message,id})
+  }
+  const handleJoinRoom = () => {
+
+    setRoom(roomName)
+    if (socket && roomName) {
+      socket.emit("join-room", roomName);
+      setRoomName('');
+    } else {
+      console.log("Please enter a room name.");
     }
-    useEffect(() => {
-      const searchParams = new URLSearchParams(location.search);
-      const name = searchParams.get('name');
-      const room = searchParams.get('room');
-  
-      setName(name);
-      setRoom(room);
-  
-      const newSocket = io(ENDPOINT, { transports: ['websocket'] });
-      setSocket(newSocket);
-      newSocket.on('connect', () => {
-        console.log('Connected to the server');
-        setSocketId(newSocket.id);
-      alert(newSocket.id)
-        if (name && room) {
-          newSocket.emit('join', { name, room });
-        }
-      });
-      newSocket.on("received-message",(message)=>{
+  };
 
-        console.log(message)
-        setMessages((messages)=>[...messages,message]);
-        alert(message)
-
-      })
-      setSocket(newSocket);
-  
-      return () => {
-        newSocket.disconnect();
-      };
-    }, [location.search, name]);
   return (
-    
-    <div style={{marginTop:"30vh",marginLeft:"30vw"}}>
-      <h1 style={{marginLeft:"10vw"}}>Chat App</h1>
-     <h3 > Socket ID: {socketid!=""?socketid:""}</h3>
-      Welcome to my chat App
-      <input onChange={(e)=>SetMessage(e.target.value)} style={{marginLeft:"6vw"}}></input>
-      <hr/>
-    Room Name<input onChange={(e)=>setRoomName(e.target.value)} style={{marginLeft:"12vw"}}></input>  
-    <button onClick={()=>JoinSomeRoom()} class="btn btn-primary" style={{marginLeft:"2vw"}} >Join Now</button>
-    <hr/>
-    Room <input style={{marginLeft:"15vw"}} onChange={(e)=>setRoom(e.target.value)}></input>
-    <button type="submit" class="btn btn-primary" onClick={()=>handleSubmit()} style={{marginLeft:"2vw"}}>Send</button>
-    
-    {
-      messages.length!=0?messages.map((message)=>{
-        <>
-          {message}
-        </>
-      }):""
-
-
-    }
+    <div className='text-center'>
+      Socket ID {socketid}
+      <h1>Chat Room</h1>
+      <div >
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Type your message..."
+          />
+          <button type="submit" className='btn btn-primary m-4 px-4'>Send</button>
+        </form>
+        <div>
+          <input
+            type="text"
+            value={roomName}
+            onChange={(e) => setRoomName(e.target.value)}
+            placeholder="Room name..."
+          />
+          <button onClick={handleJoinRoom} className='btn btn-primary m-4'>Join Room</button>
+        </div>
+        <input onChange={(e)=>setId(e.target.value)}  placeholder="ID"></input>
+        <button onClick={sendwithid} className='btn btn-primary m-3'>  Send with ID</button>
+        <div>
+          {messages.map((msg, index) => (
+            <div key={index} style={{fontFamily:"fantasy"}} className='mt-2'>{msg}</div>
+          ))}
+        </div>
+      </div>
     </div>
-  )
-}
+  );
+};
+
+export default Chat;
