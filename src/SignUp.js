@@ -10,7 +10,7 @@ export default function SignUp() {
 
         function signup(){
 
-            axios.post('http://localhost:3001/signup',{
+            axios.post('https://chat-app-backend-15k0.onrender.com/signup',{
                 name:name,
                 email:email,
                 password:password
