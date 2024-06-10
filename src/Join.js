@@ -12,7 +12,7 @@ export default function Join() {
       if(!email || !password)
           return ;
 
-      axios.post('http://localhost:3001/login',{
+      axios.post('https://chat-app-backend-15k0.onrender.com/login',{
         email:email,
         password:password
       })
