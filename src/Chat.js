@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 
-const ENDPOINT = "http://localhost:3001";
+const ENDPOINT = "https://chat-app-backend-15k0.onrender.com/";
 
 const Chat = () => {
   const [socket, setSocket] = useState(null);
