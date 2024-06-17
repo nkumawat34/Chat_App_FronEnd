@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
-
-const ENDPOINT = "http://localhost:3001";
+import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+const ENDPOINT = "https://chat-app-backend-15k0.onrender.com";
 
 const Chat = () => {
   const [socket, setSocket] = useState(null);
@@ -11,10 +12,20 @@ const Chat = () => {
   const [socketid,setSocketId]=useState("");
   const [id,setId]=useState('')
   const [room,setRoom]=useState('')
+  const location = useLocation();
+  const email =location.state.email
+ const navigate=useNavigate()
   useEffect(() => {
-    const newSocket = io(ENDPOINT, { transports: ['websocket'] });
+    
+    const token = localStorage.getItem('token'+email);
+    
+    const newSocket = io(ENDPOINT, { transports: ['websocket'],   auth: {
+      token: token
+  } },
+      
+    );
     setSocket(newSocket);
-
+    
     newSocket.on('connect', () => {
       console.log('Connected to the server');
       setSocketId(newSocket.id)
@@ -55,10 +66,17 @@ const Chat = () => {
       console.log("Please enter a room name.");
     }
   };
-
+  const handleLogout = () => {
+ 
+    localStorage.removeItem('token'+email);
+    navigate("/")
+   
+  };
   return (
     <div className='text-center'>
-      Socket ID {socketid}
+      
+      <button className="m-4 btn btn-danger" onClick={handleLogout} style={{float:"right"}} >Logout</button>
+    Socket ID <strong>{socketid}  </strong> 
       <h1>Chat Room</h1>
       <div >
         <form onSubmit={handleSubmit}>
@@ -66,9 +84,9 @@ const Chat = () => {
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="Type your message..."
+            placeholder="Type your message..." style={{marginLeft:"98px"}}
           />
-          <button type="submit" className='btn btn-primary m-4 px-4'>Send</button>
+          <button type="submit" className='btn btn-primary ms-4 px-4 my-4'>Send</button>
         </form>
         <div>
           <input
@@ -87,6 +105,7 @@ const Chat = () => {
           ))}
         </div>
       </div>
+     
     </div>
   );
 };
