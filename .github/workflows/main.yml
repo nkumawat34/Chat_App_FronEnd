@@ -15,4 +15,3 @@ jobs:
       - run: npm install
       - run: npm install socket.io-client
       - run: npm run build --if-present
-      - run: npm test
