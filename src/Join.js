@@ -28,11 +28,11 @@ export default function Join() {
     }
   return (
     <div style={{marginTop:"15%"}}>
-        <div className='text-center '>Join</div>
+        <div className='text-center m-3 text-3xl'>Join</div>
         <div className='text-center'>
-       <div>Email <input onChange={(event)=>setEmail(event.target.value)} className='ms-3'></input>
+       <div>Email <input onChange={(event)=>setEmail(event.target.value)} className='ms-3 border-2 border-slate-950'></input>
        </div> 
-       <div style={{marginTop:"2vh"}}>Password<input className='mx-1' onChange={(event)=>setPassword(event.target.value)}></input>
+       <div style={{marginTop:"2vh"}}>Password<input  type="password" className='mx-1 border-2 border-slate-950' onChange={(event)=>setPassword(event.target.value)}></input>
         </div>
         <div className='text-center ' style={{marginTop:"3vh"}}><button className='btn btn-primary mx-4' onClick={handleinput}>Sign in</button>
        <Link to={'/signup'}> <button className='mx-4 btn btn-primary'>Sign up</button>  </Link>   

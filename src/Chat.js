@@ -77,14 +77,15 @@ const Chat = () => {
       
       <button className="m-4 btn btn-danger" onClick={handleLogout} style={{float:"right"}} >Logout</button>
     Socket ID <strong>{socketid}  </strong> 
-      <h1>Chat Room</h1>
+      <h1 className='mt-5 text-3xl'>Chat Room</h1>
       <div >
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className='mr-[32px]'>
           <input
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="Type your message..." style={{marginLeft:"98px"}}
+            placeholder="Type your message..." style={{marginLeft:""}}
+            className='border-2 border-slate-950'
           />
           <button type="submit" className='btn btn-primary ms-4 px-4 my-4'>Send</button>
         </form>
@@ -94,10 +95,11 @@ const Chat = () => {
             value={roomName}
             onChange={(e) => setRoomName(e.target.value)}
             placeholder="Room name..."
+            className='border-2 border-slate-950'
           />
           <button onClick={handleJoinRoom} className='btn btn-primary m-4'>Join Room</button>
         </div>
-        <input onChange={(e)=>setId(e.target.value)}  placeholder="ID"></input>
+        <input onChange={(e)=>setId(e.target.value)}  placeholder="ID" className='border-2 border-slate-950'></input>
         <button onClick={sendwithid} className='btn btn-primary m-3'>  Send with ID</button>
         <div>
           {messages.map((msg, index) => (
